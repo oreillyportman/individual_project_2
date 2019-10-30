@@ -1,5 +1,5 @@
 from application import db, app, bcrypt
-from application.forms import MusicSearchForm, AlbumForm, AlbumEditForm, RegistrationForm, LoginForm
+from application.forms import MusicSearchForm, AlbumForm, AlbumEditForm, RegistrationForm, LoginForm, UpdateAccountForm
 from flask import flash, render_template, request, redirect, url_for
 from flask_login import login_user, current_user, logout_user, login_required
 from application.models import Album, Artist, Users
@@ -14,6 +14,7 @@ def about():
     return render_template('about.html', title='about')
 
 @app.route('/index', methods=['GET', 'POST'])
+@login_required
 def index():
     search = MusicSearchForm(request.form)
     if request.method == 'POST':
@@ -53,10 +54,11 @@ def login():
             if next_page:
                 return redirect(next_page)
             else:
-                return redirect(url_for('account'))
+                return redirect(url_for('home'))
     return render_template('login.html', title='Login',form=form)
 
 @app.route('/account', methods=['GET','POST'])
+@login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
@@ -72,11 +74,13 @@ def account():
     return render_template('account.html', title='Account', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
 @app.route('/results')
+@login_required
 def search_results(search):
     Lambda = int(Album.query.all()[len(Album.query.all())-1].artist_id)
     zeta = 0
@@ -110,6 +114,7 @@ def search_results(search):
         return render_template('results.html', table=table)
 
 @app.route('/new_album', methods=['GET', 'POST'])
+@login_required
 def new_album():
     form = AlbumForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -134,6 +139,7 @@ def save_changes(album, form, new=False):
     db.session.commit()
 
 @app.route('/item/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit(id):
     qry = db.session.query(Album).filter(Album.id==id)
     album = qry.first()
