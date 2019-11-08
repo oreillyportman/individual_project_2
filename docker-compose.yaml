@@ -12,7 +12,13 @@ services:
     image: mysql:5.7
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=database1
+      - MYSQL_DATABASE=database2
+    volumes:
+      - type: volume
+        target: /var/lib/database2
+        source: sqldata
+volumes:
+  sqldata:
 
 
 
