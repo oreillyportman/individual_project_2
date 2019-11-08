@@ -1,12 +1,8 @@
-
-FROM ubuntu:16.04
-RUN apt-get update
-RUN apt-get install python3 -y
-RUN apt-get install python3-pip -y 
+FROM python:2.7
+WORKDIR /app
+RUN pip install gunicorn
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY . .
-RUN pip3 install virtualenv
-RUN virtualenv venv
-RUN . /venv/bin/activate
-RUN chmod 777 ./requirements.txt
-RUN pip3 install -r ./requirements.txt 
-ENTRYPOINT ["/usr/bin/python3", "run.py"]
+# ENTRYPOINT ["/usr/local/bin/gunicorn", "-b", "0.0.0.0:5000", "application.__init__:app"]
+ENTRYPOINT ["python", "run.py"]
